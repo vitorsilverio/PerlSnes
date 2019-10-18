@@ -12,31 +12,21 @@ use Moose;
 # A
 # também conhecido como acumulator(acumulador)
 # é utilizado para as instruções aritméticas
+# portanto a nossa CPU começa com esses membros inicialmente:
+has 'A' => (is => 'rw');
+
+# O registrador X não pode ser usado para contas aritméticas (provavelmente só o A pode)
 # X e Y são registradores limitados a indexação
 # se você quer acessar algum endereço de memoria você vai jogar o valor dentro de X ou de Y para definir a
 # posição de memoria que quer acessar
+has ['X', 'Y'] => (is => 'rw');
+
 # temos o registrador P
 # é o registrador de flags
 # ele guarda status das operações
 # por exemplo se uma operação matematica deu 0 ele vai ativar a flag zero
 # se deu overflow ele ativa a flag indicando que deu overflow
 # cada bit nesse registrador é uma flag
-# o registrador PC
-# é o program counter
-# ele guarda a posição da proxima instrução a ser executada
-# lembre-se que o memoria é um array
-# se você ta lendo indice por indice voce precisa de um lugar para guardar qual a instrução ta sendo executada
-# o registrador S é o registrador de stack (pilha)
-# ele guarda o endereço de onde ta o topo da pilha
-# tem mais 3 registradores, que são um pouco mais complicados, mas também são para controle de endereços
-# eu explico eles depois
-# portanto a nossa CPU começa com esses membros inicialmente:
-
-has 'A' => (is => 'rw');
-# O registrador X não pode ser usado para contas aritméticas (provavelmente só o A pode)
-has 'X' => (is => 'rw');
-has 'Y' => (is => 'rw');
-
 # o registrador P é chamado Flags register
 # ele não guarda exatamente um valor mas sim estados
 # cada um dos oito bits desse registrador tem um significado
@@ -54,7 +44,19 @@ has 'Y' => (is => 'rw');
 #bit 1 - Flag Z - Zero
 #bit 0 - Flag C - Carry
 has 'P' => (is => 'rw');
+
+
+# o registrador S é o registrador de stack (pilha)
+# ele guarda o endereço de onde ta o topo da pilha
+# tem mais 3 registradores, que são um pouco mais complicados, mas também são para controle de endereços
+# eu explico eles depois
 has 'S' => (is => 'rw');
+
+# o registrador PC
+# é o program counter
+# ele guarda a posição da proxima instrução a ser executada
+# lembre-se que o memoria é um array
+# se você ta lendo indice por indice voce precisa de um lugar para guardar qual a instrução ta sendo executada
 has 'PC' => (is => 'rw');
 
 
