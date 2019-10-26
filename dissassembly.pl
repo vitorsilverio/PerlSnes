@@ -1,30 +1,31 @@
 use warnings;
 use strict;
 use autodie;
+use Switch;
 
 #modos de endereçamento
-my $imm = '#$00';
-my $sr = '$00,S';
-my $dp = '$00';
-my $dpx = '$00,X';
-my $dpy = '$00,Y';
-my $idp = '($00)';
-my $idx = '($00,X)';
-my $idy = '($00),Y';
-my $idl = '[$00]';
+my $imm  = '#$00';
+my $sr   = '$00,S';
+my $dp   = '$00';
+my $dpx  = '$00,X';
+my $dpy  = '$00,Y';
+my $idp  = '($00)';
+my $idx  = '($00,X)';
+my $idy  = '($00),Y';
+my $idl  = '[$00]';
 my $idly = '[$00],Y';
-my $isy = '($00,S),Y';
-my $abs = '$0000';
-my $abx = '$0000,X';
-my $aby = '$0000,Y';
-my $abl = '$000000';
-my $alx = '$000000,X';
-my $ind = '($0000)';
-my $iax = '($0000,X)';
-my $ial = '[$000000]';
-my $rel = '$0000 (8 bits PC-relative)';
+my $isy  = '($00,S),Y';
+my $abs  = '$0000';
+my $abx  = '$0000,X';
+my $aby  = '$0000,Y';
+my $abl  = '$000000';
+my $alx  = '$000000,X';
+my $ind  = '($0000)';
+my $iax  = '($0000,X)';
+my $ial  = '[$000000]';
+my $rel  = '$0000 (8 bits PC-relative)';
 my $rell = '$0000 (16 bits PC-relative)';
-my $bm = '$00,$00 ';
+my $bm   = '$00,$00 ';
 
 # instruções seguindo essa tabela http://www.oxyron.de/html/opcodes816.html
 my @instructions = (
@@ -312,12 +313,25 @@ binmode FILE;
 while ( read(FILE, $buffer, 1) ) {
     push(@bytes, unpack("C",$buffer));
     $buffer = "";
-    last if (@bytes > 10);
+    last if (@bytes > 0xff);
 }
 
-my $pc = 0x8000;
-foreach my $byte (@bytes) {
-    my $instruction = $instructions[$byte];
-    printf("%06X: %s\n",$pc,$instruction->{'mnemonic'});
-    $pc++;
+for (my $pc = 0; $pc < @bytes; $pc++) {
+    my $instruction = $instructions[$bytes[$pc]];
+    printf("%06X: %s",$pc+0x8000,$instruction->{'mnemonic'});
+    
+    switch ($instruction->{'address_mode'}) {
+        case ($abs) {
+            printf(" \$%04X",( $bytes[$pc+1] | ( $bytes[$pc+2] << 8 ) ));
+            $pc += 2
+        }
+        case ($imm) {
+            printf(" #\$%02X", $bytes[$pc+1]);
+            $pc++
+        }
+        # else {
+        #     #insira comandos aqui
+        # }
+    }
+    print("\n");
 }
